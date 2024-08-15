@@ -67,10 +67,10 @@ jobs:
       - name: Apply osmosis transformation
         run: ./migrate_osmosis.sh -i pif.json edited.json
 
-      - name: Show contents of edited.json
-        run: cat edited.json
+      - name: Rename edited.json to pif.json
+        run: mv edited.json pif.json
 
-      - name: Process edited.json to create edited_tricky.txt
+      - name: Process pif.json to create edited_tricky.txt
         run: echo "" > edited_tricky.txt
 
       - name: Parse txt
@@ -79,10 +79,10 @@ jobs:
       - name: Show contents of edited_tricky.txt
         run: cat edited_tricky.txt
 
-      - name: Commit both edited.json and edited_tricky.txt to the repository
+      - name: Commit both pif.json and edited_tricky.txt to the repository
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add edited.json edited_tricky.txt
-          git commit -m "Add edited.json and edited_tricky.txt for ${{ matrix.device_name }} on ${{ needs.setup.outputs.tag_name }}"
+          git add pif.json edited_tricky.txt
+          git commit -m "Add pif.json and edited_tricky.txt for ${{ matrix.device_name }} on ${{ needs.setup.outputs.tag_name }}"
           git push
