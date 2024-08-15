@@ -65,18 +65,21 @@ jobs:
         run: ./generate_pif.sh 
         
       - name: Apply osmosis transformation
-        run: ./migrate_osmosis.sh -i pif.json
+        run: ./migrate_osmosis.sh -i pif.json edited.json
 
-      - name: Parse spoof_build_vars
-        run : ./tricky.sh
-        
-      - name: Show contents of spoof_build_vars
-        run: cat spoof_build_vars
+      - name: Show contents of edited.json
+        run: cat edited.json
 
-      - name: Commit both pif.json and spoof_build_vars to the repository
+      - name: Process edited.json to create edited_tricky.txt
+        run: ./tricky.sh
+         
+      - name: Show contents of edited_tricky.txt
+        run: cat edited_tricky.txt
+
+      - name: Commit both edited.json and edited_tricky.txt to the repository
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add pif.json spoof_build_vars
-          git commit -m "Add pif.json and edited_tricky.txt for ${{ matrix.device_name }} on ${{ needs.setup.outputs.tag_name }}"
+          git add edited.json edited_tricky.txt
+          git commit -m "Add edited.json and edited_tricky.txt for ${{ matrix.device_name }} on ${{ needs.setup.outputs.tag_name }}"
           git push
