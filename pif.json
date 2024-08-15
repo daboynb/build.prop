@@ -1,4 +1,5 @@
 {
+
     "MANUFACTURER": "Google",
     "MODEL": "Pixel 8 Pro",
     "FINGERPRINT": "google/husky_beta/husky:15/AP31.240617.015/12207491:user/release-keys",
@@ -6,7 +7,10 @@
     "PRODUCT": "husky_beta",
     "DEVICE": "husky",
     "RELEASE": "15",
+    "ID": "AP31.240617.015",
+    "INCREMENTAL": "12207491",
     "TYPE": "user",
     "TAGS": "release-keys",
-    "SECURITY_PATCH": "2024-08-05}{}{}{}{}{}{}{}{}{"
+    "SECURITY_PATCH": "2024-08-05}{}{}{}{}{}{}{}{}{}{",
+    "DEVICE_INITIAL_SDK_INT": "32"
 }
