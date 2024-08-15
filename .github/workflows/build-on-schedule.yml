@@ -79,6 +79,9 @@ jobs:
               break
             fi
           done < edited.json
+
+      - name: Remove unwanted characters from edited_tricky.txt
+        run: sed -i 's/[{},":]//g' edited_tricky.txt
         
       - name: Show contents of edited_tricky.txt
         run: cat edited_tricky.txt
