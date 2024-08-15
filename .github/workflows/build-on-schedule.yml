@@ -34,6 +34,11 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Remove previously committed files
+        run: |
+          git rm -f pif.json spoof_build_vars || true
+          git commit -m "Cleanup previous files" || true   
+
       - name: Install APT packages
         run: |
           sudo apt install -y dos2unix jq
@@ -48,7 +53,7 @@ jobs:
         run: pip install ./payload_dumper/
 
       - name: Make all scripts executable
-        run: chmod +x *.sh && rm pif.json && rm spoof_build_vars
+        run: chmod +x *.sh 
 
       - name: Download latest OTA build for ${{ matrix.device_name }}
         run: ./download_latest_ota_build.sh ${{ matrix.device_name }}
