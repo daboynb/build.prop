@@ -9,7 +9,14 @@ jobs:
   setup:
     name: Setup environment
     runs-on: ubuntu-latest
-   
+    outputs:
+      tag_name: ${{ steps.get_tag_name.outputs.tag_name }}
+    steps:
+      - name: Determine tag name
+        id: get_tag_name
+        run: |
+          echo "tag_name=$(date '+%Y%m%d')" >> $GITHUB_OUTPUT
+
   build:
     name: Build props
     needs: setup
