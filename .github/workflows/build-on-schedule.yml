@@ -74,7 +74,7 @@ jobs:
         run: echo "" > edited_tricky.txt
 
       - name: Parse txt
-        run : tricky.sh
+        run : ./tricky.sh
         
       - name: Show contents of edited_tricky.txt
         run: cat edited_tricky.txt
