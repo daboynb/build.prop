@@ -65,12 +65,9 @@ jobs:
         run: ./generate_pif.sh 
         
       - name: Apply osmosis transformation
-        run: ./migrate_osmosis.sh -i pif.json edited.json
+        run: ./migrate_osmosis.sh -i pif.json
 
-      - name: Rename edited.json to pif.json
-        run: mv edited.json pif.json
-
-      - name: Parse txt
+      - name: Parse spoof_build_vars
         run : ./tricky.sh
         
       - name: Show contents of spoof_build_vars
