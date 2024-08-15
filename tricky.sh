@@ -18,4 +18,4 @@ while IFS= read -r line; do
   if [[ "$clean_line" == SECURITY_PATCH* ]]; then
     break
   fi
-done < edited.json
+done < pif.json
