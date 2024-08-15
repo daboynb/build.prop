@@ -48,7 +48,7 @@ jobs:
         run: pip install ./payload_dumper/
 
       - name: Make all scripts executable
-        run: chmod +x *.sh
+        run: chmod +x *.sh && rm pif.json && rm spoof_build_vars
 
       - name: Download latest OTA build for ${{ matrix.device_name }}
         run: ./download_latest_ota_build.sh ${{ matrix.device_name }}
