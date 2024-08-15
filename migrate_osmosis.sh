@@ -122,7 +122,6 @@ for FIELD in $ALLFIELDS; do
   eval echo '\ \ \ \ \"$FIELD\": \"'\$$FIELD'\",';
 done;
 if [ "$ADVANCED" ]; then
-  echo "$N  // Advanced Settings";
   echo '    "verboseLogs": "0",';
 fi) | sed '$s/,/\n}/' > "$OUT";
 
