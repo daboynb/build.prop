@@ -67,7 +67,10 @@ jobs:
       - name: Extract images and build
         id: extract_and_build
         run: ./extract_images.sh
-
+        
+      - name: Generate PIF file
+        run: ./generate_pif.sh
+        
       - name: Check if module build ID already exists
         id: check_build_id
         run: |
