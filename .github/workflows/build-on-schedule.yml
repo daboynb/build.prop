@@ -68,11 +68,14 @@ jobs:
         id: extract_and_build
         run: ./extract_images.sh
 
-      - name : Ls
-        run : ls
+      - name: unzip
+        run: unzip *.zip
+
+      - name: ls
+        run: ls
 
       - name: pwd
-        run : pwd 
+        run: pwd 
       
       - name: Generate PIF file
         run: ./generate_pif.sh 
