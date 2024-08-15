@@ -34,7 +34,7 @@ jobs:
 
       - name: Install APT packages
         run: |
-          sudo apt install -y dos2unix
+          sudo apt install -y dos2unix jq
 
       - name: Activate venv
         run: |
@@ -70,10 +70,21 @@ jobs:
       - name: Show contents of edited.json
         run: cat edited.json
 
-      - name: Commit edited.json to the repository
+      - name: Process edited.json to create edited_tricky.txt
+        run: |
+          jq -r '
+            to_entries |
+            map(select(.key | test("MANUFACTURER|MODEL|FINGERPRINT|BRAND|PRODUCT|DEVICE|RELEASE|ID|INCREMENTAL|TYPE|TAGS|SECURITY_PATCH"))) |
+            .[] | "\(.key)=\(.value)"
+          ' edited.json > edited_tricky.txt
+
+      - name: Show contents of edited_tricky.txt
+        run: cat edited_tricky.txt
+
+      - name: Commit both edited.json and edited_tricky.txt to the repository
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add edited.json
-          git commit -m "Add edited.json for ${{ matrix.device_name }} on ${{ needs.setup.outputs.tag_name }}"
+          git add edited.json edited_tricky.txt
+          git commit -m "Add edited.json and edited_tricky.txt for ${{ matrix.device_name }} on ${{ needs.setup.outputs.tag_name }}"
           git push
