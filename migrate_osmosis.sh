@@ -91,14 +91,21 @@ fi;
 [ "$INSTALL" ] || item "Writing fields and properties to updated custom.pif.json ...";
 
 (echo "{";
+first=true
 for FIELD in $ALLFIELDS; do
-  eval echo '\ \ \ \ \"$FIELD\": \"'\$$FIELD'\",';
-done | sed '$s/,$//';  # Rimuove solo l'ultima virgola senza aggiungere graffe extra
+  if [ "$first" = true ]; then
+    first=false
+  else
+    echo ","
+  fi
+  eval echo '\ \ \ \ \"$FIELD\": \"'\$$FIELD'\"'
+done;
 if [ "$ADVANCED" ]; then
-  echo "$N  // Advanced Settings";
+  echo ",$N  // Advanced Settings";
   echo '    "verboseLogs": "0"';
 fi
-echo "}"
+echo "$N}"
 ) > "$OUT";
+
 
 [ "$INSTALL" ] || cat "$OUT";
