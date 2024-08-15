@@ -6,33 +6,20 @@ on:
     - cron: "37 13 7 * *" # At 13:37 on day-of-month 7. (UTC)
 
 jobs:
-  prepare_build:
-    name: Create release
+  setup:
+    name: Setup environment
     runs-on: ubuntu-latest
     outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-      id: ${{ steps.create_release.outputs.id }}
+      tag_name: ${{ steps.get_tag_name.outputs.tag_name }}
     steps:
       - name: Determine tag name
         id: get_tag_name
         run: |
           echo "tag_name=$(date '+%Y%m%d')" >> $GITHUB_OUTPUT
-          echo "friendly_tag_name=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
-
-      - name: Create a release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.get_tag_name.outputs.tag_name }}
-          release_name: ${{ steps.get_tag_name.outputs.friendly_tag_name }}
-          draft: false
-          prerelease: false
 
   build:
     name: Build props
-    needs: prepare_build
+    needs: setup
     strategy:
       matrix:
         # Devices to build props for
@@ -68,57 +55,25 @@ jobs:
         id: extract_and_build
         run: ./extract_images.sh
 
-      - name: unzip
+      - name: Unzip
         run: unzip *.zip
 
-      - name: rename
+      - name: Rename system.prop to build.prop
         run: mv system.prop build.prop
  
       - name: Generate PIF file
         run: ./generate_pif.sh 
         
-      - name: osmosis
-        run : ./migrate_osmosis.sh -i pif.json edited.json
+      - name: Apply osmosis transformation
+        run: ./migrate_osmosis.sh -i pif.json edited.json
 
-      - name: cat jaon
+      - name: Show contents of edited.json
         run: cat edited.json
-        
-      - name: Check if module build ID already exists
-        id: check_build_id
+
+      - name: Commit edited.json to the repository
         run: |
-          BASENAME="${{ steps.extract_and_build.outputs.module_base_name }}"
-          BUILD_ID="${{ steps.extract_and_build.outputs.device_build_id }}"
-          EXISTING_RELEASE_NOTES=$(curl --silent "https://api.github.com/repos/$GITHUB_REPOSITORY/releases" | jq '.[].body')
-          if echo "$EXISTING_RELEASE_NOTES" | grep -q "${BASENAME}_${BUILD_ID}"; then
-            echo "BUILD_EXISTS=true" >> $GITHUB_OUTPUT
-          else
-            echo "BUILD_EXISTS=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Upload files to release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.prepare_build.outputs.upload_url }}
-          asset_path: ./${{ steps.extract_and_build.outputs.module_base_name }}.zip
-          asset_name: ${{ steps.extract_and_build.outputs.module_base_name }}.zip
-          asset_content_type: application/zip
-        if: steps.check_build_id.outputs.BUILD_EXISTS == 'false'
-
-      - name: Add information to release
-        uses: irongut/EditRelease@v1.2.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          id: ${{ needs.prepare_build.outputs.id }}
-          replacebody: false
-          body: |
-            ## ${{ steps.extract_and_build.outputs.device_name }} (${{ steps.extract_and_build.outputs.device_codename }})
-            #### Module
-            - File name: `${{ steps.extract_and_build.outputs.module_base_name }}.zip`
-            - File hash (SHA256): `${{ steps.extract_and_build.outputs.module_hash }}`
-            #### Firmware
-            - Build Description: `${{ steps.extract_and_build.outputs.device_build_description }}`
-        if: steps.check_build_id.outputs.BUILD_EXISTS == 'false'
-
-   
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add edited.json
+          git commit -m "Add edited.json for ${{ matrix.device_name }} on ${{ needs.setup.outputs.tag_name }}"
+          git push
