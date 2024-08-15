@@ -50,7 +50,7 @@ grep_check_json api_level && [ ! "$FORCE" ] && die "No migration required";
 [ "$INSTALL" ] || item "Parsing fields ...";
 
 FPFIELDS="BRAND PRODUCT DEVICE RELEASE ID INCREMENTAL TYPE TAGS";
-ALLFIELDS="MANUFACTURER MODEL FINGERPRINT $FPFIELDS SECURITY_PATCH DEVICE_INITIAL_SDK_INT";
+ALLFIELDS="MANUFACTURER MODEL FINGERPRINT $FPFIELDS SECURITY_PATCH";
 
 for FIELD in $ALLFIELDS; do
   eval $FIELD=\"$(grep_get_json $FIELD)\";
@@ -72,15 +72,6 @@ fi;
 if grep_check_json VNDK_VERSION; then
   item 'Deprecated entry VNDK_VERSION found, changing to "*.vndk.version" property ...';
   VNDK_VERSION="$(grep_get_json VNDK_VERSION)";
-fi;
-
-if [ -n "$DEVICE_INITIAL_SDK_INT" ] && ! grep_check_json api_level; then
-  item 'Simple entry DEVICE_INITIAL_SDK_INT found, changing to DEVICE_INITIAL_SDK_INT field and "*api_level" property ...';
-fi;
-
-if [ -z "$DEVICE_INITIAL_SDK_INT" ] && grep_check_json FIRST_API_LEVEL; then
-  item 'Deprecated entry FIRST_API_LEVEL found, changing to DEVICE_INITIAL_SDK_INT field and "*api_level" property ...';
-  DEVICE_INITIAL_SDK_INT="$(grep_get_json FIRST_API_LEVEL)";
 fi;
 
 if [ -z "$RELEASE" -o -z "$INCREMENTAL" -o -z "$TYPE" -o -z "$TAGS" -o "$OVERRIDE" ]; then
