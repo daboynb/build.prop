@@ -121,11 +121,6 @@ echo "";
 for FIELD in $ALLFIELDS; do
   eval echo '\ \ \ \ \"$FIELD\": \"'\$$FIELD'\",';
 done;
-echo "$N";
-echo '    "*.build.id": "'$ID'",';
-echo '    "*.security_patch": "'$SECURITY_PATCH'",';
-[ -z "$VNDK_VERSION" ] || echo '    "*.vndk.version": "'$VNDK_VERSION'",';
-echo '    "*api_level": "'$DEVICE_INITIAL_SDK_INT'",';
 if [ "$ADVANCED" ]; then
   echo "$N  // Advanced Settings";
   echo '    "verboseLogs": "0",';
