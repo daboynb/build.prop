@@ -93,10 +93,12 @@ fi;
 (echo "{";
 for FIELD in $ALLFIELDS; do
   eval echo '\ \ \ \ \"$FIELD\": \"'\$$FIELD'\",';
-done;
+done | sed '$s/,$//';  # Rimuove solo l'ultima virgola senza aggiungere graffe extra
 if [ "$ADVANCED" ]; then
   echo "$N  // Advanced Settings";
-  echo '    "verboseLogs": "0",';
-fi) | sed '$s/,/\n}/' > "$OUT";
+  echo '    "verboseLogs": "0"';
+fi
+echo "}"
+) > "$OUT";
 
 [ "$INSTALL" ] || cat "$OUT";
