@@ -104,11 +104,6 @@ if [ -z "$SECURITY_PATCH" -o "$SECURITY_PATCH" = "null" ]; then
   unset SECURITY_PATCH;
 fi;
 
-if [ -z "$DEVICE_INITIAL_SDK_INT" -o "$DEVICE_INITIAL_SDK_INT" = "null" ]; then
-  item 'Missing required DEVICE_INITIAL_SDK_INT field and "*api_level" property value found, setting to 25 ...';
-  DEVICE_INITIAL_SDK_INT=25;
-fi;
-
 if [ -f "$OUT" ]; then
   item "Renaming old file to $(basename "$OUT").bak ...";
   mv -f "$OUT" "$OUT.bak";
@@ -117,7 +112,6 @@ fi;
 [ "$INSTALL" ] || item "Writing fields and properties to updated custom.pif.json ...";
 
 (echo "{";
-echo "";
 for FIELD in $ALLFIELDS; do
   eval echo '\ \ \ \ \"$FIELD\": \"'\$$FIELD'\",';
 done;
