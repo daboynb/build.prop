@@ -80,6 +80,9 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add edited.json edited_tricky.txt
+          rm pif.json
+          mv edited.json pif.json
+          mv edited_tricky.txt spoof_build_vars
+          git add pif.json spoof_build_vars
           git commit -m "Add edited.json and edited_tricky.txt for ${{ matrix.device_name }} on ${{ needs.setup.outputs.tag_name }}"
           git push
