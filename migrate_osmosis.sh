@@ -49,7 +49,7 @@ grep_check_json api_level && [ ! "$FORCE" ] && die "No migration required";
 
 [ "$INSTALL" ] || item "Parsing fields ...";
 
-FPFIELDS="BRAND PRODUCT DEVICE RELEASE ID INCREMENTAL TYPE TAGS";
+FPFIELDS="BRAND PRODUCT DEVICE RELEASE ID TYPE TAGS";
 ALLFIELDS="MANUFACTURER MODEL FINGERPRINT $FPFIELDS SECURITY_PATCH DEVICE_INITIAL_SDK_INT";
 
 for FIELD in $ALLFIELDS; do
@@ -83,7 +83,7 @@ if [ -z "$DEVICE_INITIAL_SDK_INT" ] && grep_check_json FIRST_API_LEVEL; then
   DEVICE_INITIAL_SDK_INT="$(grep_get_json FIRST_API_LEVEL)";
 fi;
 
-if [ -z "$RELEASE" -o -z "$INCREMENTAL" -o -z "$TYPE" -o -z "$TAGS" -o "$OVERRIDE" ]; then
+if [ -z "$RELEASE" -o -z "$TYPE" -o -z "$TAGS" -o "$OVERRIDE" ]; then
   if [ "$OVERRIDE" ]; then
     item "Overriding values for fields derivable from FINGERPRINT ...";
   else
