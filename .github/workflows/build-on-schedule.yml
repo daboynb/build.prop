@@ -71,7 +71,14 @@ jobs:
         run: cat edited.json
 
       - name: Process edited.json to create edited_tricky.txt
-        run: jq -r 'to_entries | map(select(.key | test("MANUFACTURER|MODEL|FINGERPRINT|BRAND|PRODUCT|DEVICE|RELEASE|ID|INCREMENTAL|TYPE|TAGS|SECURITY_PATCH"))) | .[] | "\(.key)=\(.value)"' edited.json > edited_tricky.txt
+        run: |
+          touch edited_tricky.txt
+          while IFS= read -r line; do
+            echo "$line" >> edited_tricky.txt
+            if [[ "$line" == *"SECURITY_PATCH"* ]]; then
+              break
+            fi
+          done < edited.json
         
       - name: Show contents of edited_tricky.txt
         run: cat edited_tricky.txt
