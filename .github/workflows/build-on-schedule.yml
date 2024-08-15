@@ -69,7 +69,7 @@ jobs:
         run: ./extract_images.sh
         
       - name: Generate PIF file
-        run: ./generate_pif.sh
+        run: ./generate_pif.sh -f system.prop
         
       - name: Check if module build ID already exists
         id: check_build_id
