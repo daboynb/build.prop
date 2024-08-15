@@ -106,16 +106,4 @@ jobs:
             - Build Description: `${{ steps.extract_and_build.outputs.device_build_description }}`
         if: steps.check_build_id.outputs.BUILD_EXISTS == 'false'
 
-      - name: Send to Telegram
-        run: |
-          {
-            echo '${{ steps.extract_and_build.outputs.device_name }} - ${{ steps.extract_and_build.outputs.device_codename }}';
-            echo '${{ steps.extract_and_build.outputs.device_build_description }}'
-          } > .tg_caption
-
-          curl -X POST "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendDocument" \
-          -H "Content-Type: multipart/form-data" \
-          -F "chat_id=${{ secrets.CHANNEL_ID }}" \
-          -F "document=@${{ steps.extract_and_build.outputs.module_base_name }}.zip;type=application/zip" \
-          -F "caption=$(cat .tg_caption)"
-        if: steps.check_build_id.outputs.BUILD_EXISTS == 'false'
+   
