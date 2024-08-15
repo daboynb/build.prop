@@ -1,5 +1,5 @@
 {
-  // Build Fields
+
     "MANUFACTURER": "Google",
     "MODEL": "Pixel 8 Pro",
     "FINGERPRINT": "google/husky_beta/husky:15/AP31.240617.015/12207491:user/release-keys",
@@ -14,7 +14,7 @@
     "SECURITY_PATCH": "2024-08-05",
     "DEVICE_INITIAL_SDK_INT": "32",
 
-  // System Properties
+
     "*.build.id": "AP31.240617.015",
     "*.security_patch": "2024-08-05",
     "*api_level": "32"
