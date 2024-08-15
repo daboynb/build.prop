@@ -36,6 +36,8 @@ jobs:
 
       - name: Remove previously committed files
         run: |
+          git config --global user.name "daboynb"
+          git config --global user.email "username@users.noreply.github.com"
           git rm -f pif.json spoof_build_vars || true
           git commit -m "Cleanup previous files" || true   
 
@@ -85,8 +87,6 @@ jobs:
 
       - name: Commit both edited.json and edited_tricky.txt to the repository
         run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
           rm pif.json
           mv edited.json pif.json
           mv edited_tricky.txt spoof_build_vars
