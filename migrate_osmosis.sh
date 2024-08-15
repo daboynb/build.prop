@@ -15,7 +15,7 @@ esac;
 
 item() { echo "- $@"; }
 die() { [ "$INSTALL" ] || echo "$N$N! $@"; exit 1; }
-grep_get_json() { eval set -- "$(cat "$FILE" | tr -d '\r\n' | grep -m1 -o "$1"'".*' | cut -d: -f2-)"; echo "$1" | sed -e 's|"|\\\\\\"|g' -e 's|[,}]*$||'; }
+grep_get_json() { eval set -- "$(cat "$FILE" | tr -d '\r\n' | grep -m1 -o "\"$1\""'.*' | cut -d: -f2-)"; echo "$1" | sed -e 's|"|\\\\\\"|g' -e 's|[,}]*$||'; }
 grep_check_json() { grep -q "$1" "$FILE" && [ "$(grep_get_json $1)" ]; }
 
 case "$1" in
@@ -105,22 +105,27 @@ if [ -z "$SECURITY_PATCH" -o "$SECURITY_PATCH" = "null" ]; then
 fi;
 
 if [ -z "$DEVICE_INITIAL_SDK_INT" -o "$DEVICE_INITIAL_SDK_INT" = "null" ]; then
-  item 'Missing required DEVICE_INITIAL_SDK_INT field and "*api_level" property value found, setting to 24 ...';
-  DEVICE_INITIAL_SDK_INT=24;
+  item 'Missing required DEVICE_INITIAL_SDK_INT field and "*api_level" property value found, setting to 25 ...';
+  DEVICE_INITIAL_SDK_INT=25;
 fi;
 
 if [ -f "$OUT" ]; then
   item "Renaming old file to $(basename "$OUT").bak ...";
   mv -f "$OUT" "$OUT.bak";
-  grep -qE "verboseLogs|VERBOSE_LOGS" "$OUT.bak" && ADVANCED=1;
 fi;
 
 [ "$INSTALL" ] || item "Writing fields and properties to updated custom.pif.json ...";
 
 (echo "{";
+echo "  // Build Fields";
 for FIELD in $ALLFIELDS; do
   eval echo '\ \ \ \ \"$FIELD\": \"'\$$FIELD'\",';
 done;
+echo "$N  // System Properties";
+echo '    "*.build.id": "'$ID'",';
+echo '    "*.security_patch": "'$SECURITY_PATCH'",';
+[ -z "$VNDK_VERSION" ] || echo '    "*.vndk.version": "'$VNDK_VERSION'",';
+echo '    "*api_level": "'$DEVICE_INITIAL_SDK_INT'",';
 if [ "$ADVANCED" ]; then
   echo "$N  // Advanced Settings";
   echo '    "verboseLogs": "0",';
