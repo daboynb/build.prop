@@ -71,6 +71,9 @@ jobs:
       - name: unzip
         run: unzip *.zip
 
+      - name: rename
+        run: mv system.prop build.prop
+
       - name: ls
         run: ls
 
