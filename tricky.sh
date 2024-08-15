@@ -5,6 +5,11 @@
 
 # Leggi e processa il file JSON
 while IFS= read -r line; do
+  # Salta le righe che iniziano con //
+  if [[ "$line" =~ ^// ]]; then
+    continue
+  fi
+
   # Pulisci la riga rimuovendo i caratteri indesiderati e gli spazi
   clean_line=$(echo "$line" | sed 's/[{},":]//g' | xargs)
 
@@ -19,4 +24,3 @@ while IFS= read -r line; do
     break
   fi
 done < edited.json
-
