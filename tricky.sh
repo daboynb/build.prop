@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Sovrascrivi il file se esiste
-> edited_tricky.txt
+> spoof_build_vars
 
 # Leggi e processa il file JSON
 while IFS= read -r line; do
