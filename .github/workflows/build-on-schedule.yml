@@ -1,4 +1,4 @@
-Jake: Build props (on schedule)
+name: Build props (on schedule)
 
 on:
   schedule:
