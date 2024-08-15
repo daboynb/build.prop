@@ -71,24 +71,10 @@ jobs:
         run: cat edited.json
 
       - name: Process edited.json to create edited_tricky.txt
-        run: |
-          # Overwrite the file if it exists
-          > edited_tricky.txt
-          
-          # Read and process the JSON file
-          while IFS= read -r line; do
-            # Clean up the line by removing unwanted characters and spaces
-            clean_line=$(echo "$line" | sed 's/[{},":]//g' | xargs)
-            # Check if the line is not empty and contains a valid key-value pair
-            if [[ "$clean_line" =~ ^[A-Z_]+[ ]+.+$ ]]; then
-              # Replace the first space with an equals sign to create the key=value format
-              echo "$clean_line" | sed 's/ /=/' >> edited_tricky.txt
-            fi
-            # Stop processing after SECURITY_PATCH
-            if [[ "$clean_line" == SECURITY_PATCH* ]]; then
-              break
-            fi
-          done < edited.json
+        run: echo "" > edited_tricky.txt
+
+      - name: Parse txt
+        run : tricky.sh
         
       - name: Show contents of edited_tricky.txt
         run: cat edited_tricky.txt
