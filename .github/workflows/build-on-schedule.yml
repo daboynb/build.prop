@@ -73,15 +73,15 @@ jobs:
 
       - name: rename
         run: mv system.prop build.prop
-
-      - name: ls
-        run: ls
-
-      - name: pwd
-        run: pwd 
-      
+ 
       - name: Generate PIF file
         run: ./generate_pif.sh 
+        
+      - name: osmosis
+        run : ./migrate_osmosis.sh -i pif.json edited.json
+
+      - name: cat jaon
+        run: cat edited.json
         
       - name: Check if module build ID already exists
         id: check_build_id
