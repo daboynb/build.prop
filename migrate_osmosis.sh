@@ -117,7 +117,6 @@ fi;
 [ "$INSTALL" ] || item "Writing fields and properties to updated custom.pif.json ...";
 
 (echo "{";
-echo "";
 for FIELD in $ALLFIELDS; do
   eval echo '\ \ \ \ \"$FIELD\": \"'\$$FIELD'\",';
 done;
