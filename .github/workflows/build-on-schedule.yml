@@ -25,7 +25,7 @@ jobs:
     strategy:
       matrix:
         # Devices to build props for
-        device_name: [husky_beta15]
+        device_name: [caiman_beta15]
 
     runs-on: ubuntu-24.04
     steps:
