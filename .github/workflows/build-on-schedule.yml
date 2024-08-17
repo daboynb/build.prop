@@ -2,7 +2,7 @@ name: Build props (on schedule)
 
 on:
   schedule:
-    - cron: "*/59 * * * *"
+    - cron: "*/30 * * * *"
   push: 
     branches:
       - main
