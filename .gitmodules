@@ -1,3 +1,0 @@
-[submodule "payload_dumper"]
-	path = payload_dumper
-	url = https://github.com/5ec1cff/payload-dumper

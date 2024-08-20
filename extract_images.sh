@@ -72,10 +72,7 @@ if [ -d "$EAI_BP" ]; then
 				# Extract/Dump
 				if [ "${file: -4}" == ".bin" ]; then # If is payload use the Android OTA Dumper
 					# Format the patitions to dump for argument usage
-					partitionsArgs="$(
-						IFS=,
-						"${PARTITIONS2EXTRACT[*]}"
-					)"
+				partitionsArgs=$(IFS=,; echo "${PARTITIONS2EXTRACT[*]}")
 
 					# Skip image if it failed to get extracted
 					if ! payload_dumper "$file" --partitions="$partitionsArgs" --out="$EI_BP/$basename" 2>/dev/null; then
@@ -137,8 +134,5 @@ for dir in "$EI"/*; do  # List directory ./*
 		# Print the extraction time
 		print_message "Extraction time: $extraction_runtime seconds\n" debug
 
-		# Build system.prop
-		print_message "Building props…" info
-		./build_props.sh "$dir"
 	fi
 done

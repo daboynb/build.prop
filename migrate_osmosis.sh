@@ -15,8 +15,17 @@ esac;
 
 item() { echo "- $@"; }
 die() { [ "$INSTALL" ] || echo "$N$N! $@"; exit 1; }
-grep_get_json() { eval set -- "$(cat "$FILE" | tr -d '\r\n' | grep -m1 -o "\"$1\""'.*' | cut -d: -f2-)"; echo "$1" | sed -e 's|"|\\\\\\"|g' -e 's|[,}]*$||'; }
-grep_check_json() { grep -q "$1" "$FILE" && [ "$(grep_get_json $1)" ]; }
+grep_get_json() {
+  local target="$FILE";
+  [ -n "$2" ] && target="$2";
+  eval set -- "$(cat "$target" | tr -d '\r\n' | grep -m1 -o "$1"'".*' | cut -d: -f2-)";
+  echo "$1" | sed -e 's|"|\\\\\\"|g' -e 's|[,}]*$||';
+}
+grep_check_json() {
+  local target="$FILE";
+  [ -n "$2" ] && target="$2";
+  grep -q "$1" "$target" && [ "$(grep_get_json $1 "$target")" ];
+}
 
 case "$1" in
   -f|--force|force) FORCE=1; shift;;
@@ -49,8 +58,8 @@ grep_check_json api_level && [ ! "$FORCE" ] && die "No migration required";
 
 [ "$INSTALL" ] || item "Parsing fields ...";
 
-FPFIELDS="BRAND PRODUCT DEVICE ID";
-ALLFIELDS="MANUFACTURER MODEL FINGERPRINT $FPFIELDS SECURITY_PATCH";
+FPFIELDS="BRAND PRODUCT DEVICE RELEASE ID INCREMENTAL TYPE TAGS";
+ALLFIELDS="MANUFACTURER MODEL FINGERPRINT $FPFIELDS SECURITY_PATCH DEVICE_INITIAL_SDK_INT";
 
 for FIELD in $ALLFIELDS; do
   eval $FIELD=\"$(grep_get_json $FIELD)\";
@@ -83,7 +92,7 @@ if [ -z "$DEVICE_INITIAL_SDK_INT" ] && grep_check_json FIRST_API_LEVEL; then
   DEVICE_INITIAL_SDK_INT="$(grep_get_json FIRST_API_LEVEL)";
 fi;
 
-if [ -z "$RELEASE" -o -z "$TYPE" -o -z "$TAGS" -o "$OVERRIDE" ]; then
+if [ -z "$RELEASE" -o -z "$INCREMENTAL" -o -z "$TYPE" -o -z "$TAGS" -o "$OVERRIDE" ]; then
   if [ "$OVERRIDE" ]; then
     item "Overriding values for fields derivable from FINGERPRINT ...";
   else
@@ -109,20 +118,43 @@ if [ -z "$DEVICE_INITIAL_SDK_INT" -o "$DEVICE_INITIAL_SDK_INT" = "null" ]; then
   DEVICE_INITIAL_SDK_INT=25;
 fi;
 
+ADVSETTINGS="spoofBuild spoofProps spoofProvider spoofSignature verboseLogs";
+
+spoofBuild=1;
+spoofProps=1;
+spoofProvider=1;
+spoofSignature=0;
+verboseLogs=0;
+
 if [ -f "$OUT" ]; then
   item "Renaming old file to $(basename "$OUT").bak ...";
   mv -f "$OUT" "$OUT.bak";
+  if grep -qE "verboseLogs|VERBOSE_LOGS" "$OUT.bak"; then
+    ADVANCED=1;
+    grep_check_json VERBOSE_LOGS "$OUT.bak" && verboseLogs="$(grep_get_json VERBOSE_LOGS "$OUT.bak")";
+    for SETTING in $ADVSETTINGS; do
+      eval grep_check_json $SETTING \"$OUT.bak\" \&\& $SETTING=\"$(grep_get_json $SETTING "$OUT.bak")\";
+    done;
+  fi;
 fi;
 
 [ "$INSTALL" ] || item "Writing fields and properties to updated custom.pif.json ...";
 
 (echo "{";
+echo "  // Build Fields";
 for FIELD in $ALLFIELDS; do
   eval echo '\ \ \ \ \"$FIELD\": \"'\$$FIELD'\",';
 done;
+echo "$N  // System Properties";
+echo '    "*.build.id": "'$ID'",';
+echo '    "*.security_patch": "'$SECURITY_PATCH'",';
+[ -z "$VNDK_VERSION" ] || echo '    "*.vndk.version": "'$VNDK_VERSION'",';
+echo '    "*api_level": "'$DEVICE_INITIAL_SDK_INT'",';
 if [ "$ADVANCED" ]; then
   echo "$N  // Advanced Settings";
-  echo '    "verboseLogs": "0",';
+  for SETTING in $ADVSETTINGS; do
+    eval echo '\ \ \ \ \"$SETTING\": \"'\$$SETTING'\",';
+  done;
 fi) | sed '$s/,/\n}/' > "$OUT";
 
 [ "$INSTALL" ] || cat "$OUT";
