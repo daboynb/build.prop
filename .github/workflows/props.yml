@@ -82,6 +82,9 @@ jobs:
 
       - name: cp pif.json
         run: cp pif.json chiteroman.json
+      
+      - name: Add fields on chiteroman.json
+        run: ./chiteroman.sh chiteroman.json
 
       - name: migrate osmosis
         run: ./migrate_osmosis.sh -i pif.json osmosis.json 
