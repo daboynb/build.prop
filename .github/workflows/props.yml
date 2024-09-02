@@ -87,7 +87,7 @@ jobs:
         run: ./chiteroman.sh chiteroman.json
 
       - name: migrate osmosis
-        run: ./migrate_osmosis.sh -i pif.json osmosis.json -a
+        run: ./migrate_osmosis.sh -a pif.json osmosis.json 
 
       - name: cat
         run: cat osmosis.json
