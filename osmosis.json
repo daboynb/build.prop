@@ -17,5 +17,12 @@
   // System Properties
     "*.build.id": "AP31.240617.015",
     "*.security_patch": "2024-08-05",
-    "*api_level": "21"
+    "*api_level": "21",
+
+  // Advanced Settings
+    "spoofBuild": "1",
+    "spoofProps": "1",
+    "spoofProvider": "1",
+    "spoofSignature": "0",
+    "verboseLogs": "0"
 }
