@@ -118,13 +118,14 @@ if [ -z "$DEVICE_INITIAL_SDK_INT" -o "$DEVICE_INITIAL_SDK_INT" = "null" ]; then
   DEVICE_INITIAL_SDK_INT=25;
 fi;
 
-ADVSETTINGS="spoofBuild spoofProps spoofProvider spoofSignature verboseLogs";
-
+# Always set the spoof and log variables to the specified values
 spoofBuild=1;
 spoofProps=1;
 spoofProvider=1;
 spoofSignature=0;
 verboseLogs=0;
+
+ADVSETTINGS="spoofBuild spoofProps spoofProvider spoofSignature verboseLogs";
 
 if [ -f "$OUT" ]; then
   item "Renaming old file to $(basename "$OUT").bak ...";
