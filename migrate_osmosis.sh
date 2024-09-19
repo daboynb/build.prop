@@ -120,8 +120,8 @@ fi;
 
 # Always set the spoof and log variables to the specified values
 spoofBuild=1;
-spoofProps=1;
-spoofProvider=1;
+spoofProps=0;
+spoofProvider=0;
 spoofSignature=0;
 verboseLogs=0;
 
