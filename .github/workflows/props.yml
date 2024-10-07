@@ -15,9 +15,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       
-      - name: Install apktool
-        run: sudo apt-get install -y apktool
-      
       - name: Grant execute permission for script
         run: chmod +x pif.sh
 
