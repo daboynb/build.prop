@@ -2,23 +2,26 @@ name: Build props (on schedule)
 
 on:
   schedule:
-    - cron: "*/30 * * * *" # Runs every 30 minutes
-  push:
+    - cron: "*/30 * * * *"
+  push: 
     branches:
       - main
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
 
     steps:
-      - name: ls
-        run: ls 
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Install apktool
+        run: sudo apt-get install -y apktool
+      
+      - name: Grant execute permission for script
+        run: chmod +x pif.sh
 
-      - name: Make all scripts executable
-        run: chmod +x *.sh 
-
-      - name: Run pif.sh
+      - name: Generate JSON file
         run: ./pif.sh
 
       - name: Check differences in chiteroman.json
