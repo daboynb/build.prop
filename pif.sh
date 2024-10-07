@@ -81,19 +81,14 @@ EOF
 # Remove temporary HTML files if they exist
 find . -maxdepth 1 -name "*_HTML" -exec rm {} \;
 
-# Rename and copy JSON files
-mv pif.json pre_chiteroman.json
-cp pre_chiteroman.json pre_osmosis.json
-
 # Add fields on chiteroman.json
-./chiteroman.sh pre_chiteroman.json
-mv pre_chiteroman.json chiteroman.json 
+./migrate_chiteroman.sh pif.json chiteroman.json
 
 # Migrate osmosis
-./migrate_osmosis.sh -a pre_osmosis.json osmosis.json 
+./migrate_osmosis.sh -a pif.json osmosis.json 
 
 # Delete prev pif
-rm pre_osmosis.json
+rm pif.json
 
 # No ts
 cp osmosis.json device_osmosis.json 

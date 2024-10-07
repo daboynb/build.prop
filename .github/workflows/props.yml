@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v3
       
       - name: Grant execute permission for script
-        run: chmod +x pif.sh
+        run: chmod +x *.sh
 
       - name: Generate JSON file
         run: ./pif.sh
