@@ -12,8 +12,11 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
+      - name: ls
+        run: ls 
+
       - name: Make all scripts executable
-        run: ls && chmod +x *.sh 
+        run: chmod +x *.sh 
 
       - name: Run pif.sh
         run: ./pif.sh
