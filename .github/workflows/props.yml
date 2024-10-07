@@ -2,100 +2,27 @@ name: Build props (on schedule)
 
 on:
   schedule:
-    - cron: "*/30 * * * *"
-  push: 
+    - cron: "*/30 * * * *" # Runs every 30 minutes
+  push:
     branches:
       - main
-      
+
 jobs:
-  setup:
-    name: Setup environment
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup environment
-        run: echo "Environment setup complete"
-
   build:
-    name: Build props
-    needs: setup
-    strategy:
-      matrix:
-        # Devices to build props for
-        device_name: [komodo_beta15]
-
     runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
+    steps:
       - name: Install APT packages
         run: |
-          sudo apt install -y dos2unix jq unzip
-
-      - name: Activate venv
-        run: |
-          python3.12 -m venv .venv/
-          . .venv/bin/activate
-          echo PATH=$PATH >> "$GITHUB_ENV"
-
-      - name: Install payload_dumper
-        run: pip install git+https://github.com/5ec1cff/payload-dumper
+          sudo apt install -y jq
 
       - name: Make all scripts executable
         run: chmod +x *.sh 
 
-      - name: Download latest OTA build for ${{ matrix.device_name }}
-        run: ./download_latest_ota_build.sh ${{ matrix.device_name }}
+      - name: Run pif.sh
+        run: ./pif.sh
 
-      - name: Extract images and build
-        id: extract_and_build
-        run: ./extract_images.sh
-
-      - name: build.prop system
-        run: cp extracted_images/*/extracted/system/system/build.prop ./build.prop
-        
-      - name: build.prop vendor
-        run: cp extracted_images/*/extracted/vendor/build.prop ./vendor-build.prop
-
-      - name: build.prop product
-        run: cp extracted_images/*/extracted/product/etc/build.prop ./product-build.prop
-        
-      - name: ls
-        run: ls
-
-      - name: cat build.prop 
-        run: cat build.prop 
-      
-      - name: cat vendor-build.prop
-        run: cat vendor-build.prop
-
-      - name: cat product-build.prop
-        run: cat product-build.prop
-
-      - name: generate pif
-        run: ./create_pif.sh 
-      
-      - name: cat pif.json
-        run: cat pif.json
-
-      - name: cp pif.json
-        run: cp pif.json chiteroman.json
-      
-      - name: Add fields on chiteroman.json
-        run: ./chiteroman.sh chiteroman.json
-
-      - name: migrate osmosis
-        run: ./migrate_osmosis.sh -a pif.json osmosis.json 
-
-      - name: cat
-        run: cat osmosis.json
-        
-      - name: cat
-        run: cat chiteroman.json
-
-      - name: Check differences in pif.json
+      - name: Check differences in chiteroman.json
         run: |
           if git diff --exit-code chiteroman.json; then
             echo "chiteroman.json is the same, no need to commit."
@@ -104,6 +31,7 @@ jobs:
             git config --global user.email "username@users.noreply.github.com"
             git add chiteroman.json
             git add osmosis.json
+            git add device_osmosis.json 
             git commit -m "Update pif.json"
             git push
           fi

@@ -1,13 +1,10 @@
 #!/bin/sh
 
-case "$1" in
-  -h|--help|help) echo "sh migrate.sh [-f] [-o] [-a] [in-file] [out-file]"; exit 0;;
-esac;
-
 N="
 ";
 
 case "$1" in
+  -h|--help|help) echo "sh migrate.sh [-f] [-o] [-a] [in-file] [out-file]"; exit 0;;
   -i|--install|install) INSTALL=1; shift;;
   *) echo "custom.pif.json migration script \
     $N  by osm0sis @ xda-developers $N";;
@@ -27,15 +24,14 @@ grep_check_json() {
   grep -q "$1" "$target" && [ "$(grep_get_json $1 "$target")" ];
 }
 
-case "$1" in
-  -f|--force|force) FORCE=1; shift;;
-esac;
-case "$1" in
-  -o|--override|override) OVERRIDE=1; shift;;
-esac;
-case "$1" in
-  -a|--advanced|advanced) ADVANCED=1; shift;;
-esac;
+until [ -z "$1" -o -f "$1" ]; do
+  case "$1" in
+    -f|--force|force) FORCE=1; shift;;
+    -o|--override|override) OVERRIDE=1; shift;;
+    -a|--advanced|advanced) ADVANCED=1; shift;;
+    *) die "Invalid argument/file not found: $1";;
+  esac;
+done;
 
 if [ -f "$1" ]; then
   FILE="$1";
@@ -118,14 +114,13 @@ if [ -z "$DEVICE_INITIAL_SDK_INT" -o "$DEVICE_INITIAL_SDK_INT" = "null" ]; then
   DEVICE_INITIAL_SDK_INT=25;
 fi;
 
-# Always set the spoof and log variables to the specified values
+ADVSETTINGS="spoofBuild spoofProps spoofProvider spoofSignature verboseLogs";
+
 spoofBuild=1;
-spoofProps=0;
-spoofProvider=0;
+spoofProps=1;
+spoofProvider=1;
 spoofSignature=0;
 verboseLogs=0;
-
-ADVSETTINGS="spoofBuild spoofProps spoofProvider spoofSignature verboseLogs";
 
 if [ -f "$OUT" ]; then
   item "Renaming old file to $(basename "$OUT").bak ...";
@@ -136,23 +131,21 @@ if [ -f "$OUT" ]; then
     for SETTING in $ADVSETTINGS; do
       eval grep_check_json $SETTING \"$OUT.bak\" \&\& $SETTING=\"$(grep_get_json $SETTING "$OUT.bak")\";
     done;
+    grep -q '//"\*.security_patch"' "$OUT.bak" && SECURITY_COMMENT='//';
   fi;
 fi;
 
 [ "$INSTALL" ] || item "Writing fields and properties to updated custom.pif.json ...";
 
 (echo "{";
-echo "  // Build Fields";
 for FIELD in $ALLFIELDS; do
   eval echo '\ \ \ \ \"$FIELD\": \"'\$$FIELD'\",';
 done;
-echo "$N  // System Properties";
 echo '    "*.build.id": "'$ID'",';
-echo '    "*.security_patch": "'$SECURITY_PATCH'",';
+echo "    $SECURITY_COMMENT"'"*.security_patch": "'$SECURITY_PATCH'",';
 [ -z "$VNDK_VERSION" ] || echo '    "*.vndk.version": "'$VNDK_VERSION'",';
 echo '    "*api_level": "'$DEVICE_INITIAL_SDK_INT'",';
 if [ "$ADVANCED" ]; then
-  echo "$N  // Advanced Settings";
   for SETTING in $ADVSETTINGS; do
     eval echo '\ \ \ \ \"$SETTING\": \"'\$$SETTING'\",';
   done;
