@@ -12,12 +12,8 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - name: Install APT packages
-        run: |
-          sudo apt install -y jq
-
       - name: Make all scripts executable
-        run: la && chmod +x *.sh 
+        run: l && chmod +x *.sh 
 
       - name: Run pif.sh
         run: ./pif.sh
