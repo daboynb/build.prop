@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Make all scripts executable
-        run: l && chmod +x *.sh 
+        run: ls && chmod +x *.sh 
 
       - name: Run pif.sh
         run: ./pif.sh
