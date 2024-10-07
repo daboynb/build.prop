@@ -1,9 +1,9 @@
 {
   "MANUFACTURER": "Google",
-  "MODEL": "Pixel 6a",
-  "FINGERPRINT": "google/bluejay_beta/bluejay:15/AP41.240823.009/12329489:user/release-keys",
-  "PRODUCT": "bluejay_beta",
-  "DEVICE": "bluejay",
+  "MODEL": "Pixel 8a",
+  "FINGERPRINT": "google/akita_beta/akita:15/AP41.240823.009/12329489:user/release-keys",
+  "PRODUCT": "akita_beta",
+  "DEVICE": "akita",
   "SECURITY_PATCH": "2024-09-05",
   "DEVICE_INITIAL_SDK_INT": "32",
   "spoofBuild": true,
